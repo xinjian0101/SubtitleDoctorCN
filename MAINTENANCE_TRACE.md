@@ -1,44 +1,59 @@
 # Maintenance Trace
 
-Batch: `content-enrichment-2026-06-19`
+## Cycle 1
 
-## Iteration 07
+- Expanded the project overview.
+- Added option guidance and review notes.
+- Kept the original SRT-only scope.
 
-- Expanded the README with use cases, parameter guidance, issue explanations, review workflow, human-review boundaries, and limitations.
-- Kept the existing SRT-only and check-only scope explicit.
+## Cycle 2
 
-## Iteration 08
+- Added rule documentation, profiles, terminology format, workflow notes, and review records.
 
-- Added this visible maintenance trace.
-- Defined test and compatibility expectations for future subtitle-rule changes.
+## Cycle 3
 
-## Iteration 09
+- Added the profile schema and maintenance policies.
 
-- Planned document: `docs/REVIEW_CHECKLIST.md`.
-- Converts automated findings into an ordered human approval workflow.
+## Cycle 4
 
-## Validation record
+### Iteration 67
+
+- Replaced the Chinese README with a full English guide.
+
+### Iteration 68
+
+- Replaced the sample subtitle with English text.
+
+### Iteration 69
+
+- Replaced the test text with English cue objects while keeping the overlap test.
+
+### Iteration 70
+
+- Updated this trace to record the English conversion.
+
+## Verification
 
 | Check | Result |
 |---|---|
-| Existing CLI retained | pass |
-| Existing CPS and line-length parameters retained | pass |
-| No automatic-fix claim introduced | pass |
-| Local-processing statement retained | pass |
-| Documentation links reviewed | pass after iteration 09 |
+| Existing command retained | pass |
+| Existing options retained | pass |
+| README is English | pass |
+| Sample subtitle is English | pass |
+| Test text is English | pass |
 
-## Maintenance policy
+## Maintenance rules
 
-1. Every rule must include a clear error code and human-readable message.
-2. Threshold changes require fixtures for Chinese, English, numbers, and mixed punctuation.
-3. Parser changes must preserve valid SRT timing and text.
-4. Automatic repair must remain opt-in if introduced later.
-5. Reports must retain source cue indices so reviewers can locate problems.
-6. Style profiles must be versioned and reproducible.
+1. Keep rule identifiers stable.
+2. Add fixtures when thresholds change.
+3. Preserve valid SRT timing.
+4. Keep correction behavior optional.
+5. Keep cue indices in reports.
+6. Maintain user-facing repository content in English.
 
-## Open items
+## Open work
 
-- No ASS/SSA/VTT parser in the current baseline.
-- No acoustic alignment or speaker identification.
-- No semantic proofreading or proper-noun verification.
-- No automatic player preview.
+- Additional subtitle formats
+- Audio alignment
+- Speaker identification
+- Preview tooling
