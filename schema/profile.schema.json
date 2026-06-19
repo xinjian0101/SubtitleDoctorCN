@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Caption Review Profile",
+  "type": "object",
+  "required": ["profile_version", "id", "language", "max_characters_per_line", "max_characters_per_second"],
+  "properties": {
+    "profile_version": {"type": "integer", "minimum": 1},
+    "id": {"type": "string", "minLength": 1},
+    "language": {"type": "string", "minLength": 2},
+    "description": {"type": "string"},
+    "max_characters_per_line": {"type": "integer", "minimum": 1},
+    "max_characters_per_second": {"type": "number", "exclusiveMinimum": 0},
+    "minimum_duration_ms": {"type": "integer", "minimum": 0},
+    "maximum_duration_ms": {"type": "integer", "minimum": 1},
+    "maximum_lines": {"type": "integer", "minimum": 1},
+    "punctuation_style": {"type": "string"},
+    "checks": {"type": "object"},
+    "safe_fixes": {"type": "object"}
+  },
+  "additionalProperties": true
+}
