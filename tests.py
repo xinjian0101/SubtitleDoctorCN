@@ -4,15 +4,11 @@ import main
 
 class SubtitleDoctorTest(unittest.TestCase):
     def test_overlap_detection(self):
-        content = """1
-00:00:00,000 --> 00:00:02,000
-第一句
-
-2
-00:00:01,500 --> 00:00:03,000
-第二句
-"""
-        issues = main.lint(main.parse_srt(content))
+        cues = [
+            main.Cue(1, 0, 2000, "First line"),
+            main.Cue(2, 1500, 3000, "Second line"),
+        ]
+        issues = main.lint(cues)
         self.assertTrue(any(item["type"] == "overlap" for item in issues))
 
 
