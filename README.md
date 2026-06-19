@@ -1,108 +1,114 @@
 # SubtitleDoctorCN
 
-面向中文字幕的本地 SRT 质量检查器。项目用于在发布、压制或交付前发现常见时间轴、阅读速度、行长和标点问题，并输出结构化报告供人工复核。
+A local SRT quality checker for subtitle delivery workflows. The project finds common timeline, duration, reading-speed, line-length, and punctuation issues before subtitles are published, embedded, or handed off for review.
 
-> 当前版本只做检查，不自动改写字幕内容，也不替代人工校对。
+> The current release performs checks only. It does not rewrite subtitle text automatically and does not replace editorial review.
 
-## 适用场景
+## Use cases
 
-- 短视频、课程、访谈、影视解说的 SRT 交付前检查
-- 批量字幕质检流程中的基础规则门禁
-- 中英文混排字幕的标点一致性检查
-- 不同平台字幕规范的参数化预检
-- 修订前后字幕质量对比
+- Pre-delivery checks for short-form video, courses, interviews, and commentary
+- Basic rule gates in batch subtitle workflows
+- Punctuation consistency checks for mixed-language captions
+- Parameterized review for different platform requirements
+- Before-and-after comparison during subtitle revision
 
-## 当前能力
+## Current capabilities
 
-- 时间轴重叠检测
-- 非法或异常持续时间检查
-- 每秒字符数（CPS）检测
-- 单行长度检查
-- 中英文标点混用提示
-- 输出可供人工复核的 JSON 报告
-- 本地运行，不上传字幕内容
+- Timeline overlap detection
+- Invalid or unusual duration checks
+- Characters-per-second review
+- Maximum line-length review
+- Mixed punctuation hints
+- Structured JSON output
+- Local processing with no subtitle upload
 
-## 快速开始
+## Quick start
 
-### 环境
+### Requirements
 
-- Python 3.10 或更高版本
-- 标准 SRT 文件，建议使用 UTF-8 编码
+- Python 3.10 or newer
+- A standard UTF-8 SRT file
 
-### 运行
+### Run
 
 ```bash
 python main.py example.srt --max-cps 15 --max-line 22 -o report.json
 ```
 
-### 测试
+### Test
 
 ```bash
 python -m unittest -v
 ```
 
-## 参数说明
+## Options
 
-| 参数 | 示例 | 说明 |
+| Option | Example | Description |
 |---|---:|---|
-| `--max-cps` | `15` | 每秒最多允许的字符数 |
-| `--max-line` | `22` | 单行最多允许的字符数 |
-| `-o` | `report.json` | 质检报告输出路径 |
+| `--max-cps` | `15` | maximum characters per second before a review finding |
+| `--max-line` | `22` | maximum characters per subtitle line |
+| `-o` | `report.json` | output path for the JSON report |
 
-阈值应根据受众、屏幕尺寸、语言密度和平台规范调整。不要把单一阈值视为所有项目的通用标准。
+Thresholds should reflect the audience, screen size, language density, and delivery platform. One threshold is not suitable for every project.
 
-## 常见问题类型
+## Finding types
 
-### 时间轴重叠
+### Timeline overlap
 
-后一条字幕在前一条结束前开始，可能导致播放器同时显示两条字幕或覆盖异常。
+A cue starts before the previous cue ends. This may cause simultaneous display or unexpected replacement behavior.
 
-### 持续时间异常
+### Invalid duration
 
-持续时间过短会导致字幕闪现，过长则可能与后续语义脱节。检查结果应结合语速和画面节奏人工判断。
+A cue with zero or negative duration cannot be displayed correctly. Very short or very long cues also require contextual review.
 
-### 阅读速度过高
+### High reading speed
 
-CPS 高于阈值时，观众可能来不及阅读。中文、英文、数字和标点的计数方式会影响结果，因此团队应固定同一套统计规则。
+Characters per second above the selected threshold may be difficult to read. Teams should use one consistent counting method when comparing revisions.
 
-### 行长过长
+### Long line
 
-过长字幕在手机竖屏或小窗口中容易换行，遮挡主体或降低可读性。
+A long line may wrap on mobile screens, cover important visual content, or reduce readability.
 
-### 标点混用
+### Mixed punctuation
 
-常见问题包括中文句子使用英文逗号、全角半角混杂、连续标点不统一等。
+The checker flags lines that appear to combine punctuation styles. The finding is advisory because editorial style can differ by project.
 
-## 推荐工作流
+## Recommended workflow
 
-1. 从剪辑软件或转写工具导出 UTF-8 SRT。
-2. 使用项目对应的 CPS 和行长阈值运行检查。
-3. 按错误类型排序处理高风险问题。
-4. 回到视频画面核对断句、人物语气和上下文。
-5. 修改字幕后重新运行检查。
-6. 保存最终 SRT、报告和样式配置版本。
+1. Export a UTF-8 SRT file from the editing or transcription tool.
+2. Select the appropriate style profile and thresholds.
+3. Run the checker and group findings by type.
+4. Review each cue against the source media.
+5. Revise the subtitle file.
+6. Run the checker again.
+7. Store the final SRT, report, profile version, and approval record together.
 
-## 人工审核重点
+## Human review remains necessary
 
-规则工具无法可靠判断以下问题：
+Rule-based checks cannot reliably determine:
 
-- 人名、地名、品牌名是否正确
-- 语义是否忠实
-- 断句是否符合语气
-- 梗、方言和专有名词是否需要注释
-- 字幕是否遮挡画面关键信息
-- 说话人切换是否清晰
+- whether names, places, brands, and numbers are correct;
+- whether meaning is faithful to the source;
+- whether line breaks match tone and pacing;
+- whether specialized terms need explanation;
+- whether captions cover important visual information;
+- whether speaker changes are clear.
 
-## 已知限制
+## Known limitations
 
-- 当前只支持 SRT 基础质检。
-- 不自动修复时间轴或重写文本。
-- 不执行语音识别，也不与原始音频自动对齐。
-- 正则和阈值规则可能产生误报。
-- 不自动判断平台审核政策或版权风险。
+- The current baseline supports SRT quality checks only.
+- It does not repair timelines or rewrite dialogue.
+- It does not perform speech recognition or audio alignment.
+- Rule and threshold checks can produce false positives.
+- It does not determine delivery-platform policy.
 
-## 文档
+## Documentation
 
+- [Rule Reference](docs/RULES.md)
+- [Style Profiles](docs/STYLE_PROFILES.md)
+- [Review Workflow](docs/REVIEW_WORKFLOW.md)
+- [Approval Record](docs/APPROVAL_RECORD.md)
+- [Exception Policy](docs/EXCEPTION_POLICY.md)
 - [Review Checklist](docs/REVIEW_CHECKLIST.md)
 - [Maintenance Trace](MAINTENANCE_TRACE.md)
 
