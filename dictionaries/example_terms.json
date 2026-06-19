@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "language": "zh-CN",
+  "description": "Example project terminology dictionary.",
+  "terms": [
+    {
+      "preferred": "项目名称",
+      "variants": ["项目名"],
+      "mode": "review"
+    },
+    {
+      "preferred": "角色名称",
+      "variants": ["角色名"],
+      "mode": "review"
+    },
+    {
+      "preferred": "地点名称",
+      "variants": ["地点名"],
+      "mode": "review"
+    }
+  ],
+  "protected_terms": [],
+  "automatic_replacement": false
+}
