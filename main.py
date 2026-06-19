@@ -29,6 +29,15 @@ def to_ms(value: str) -> int:
     return ((hour * 60 + minute) * 60 + second) * 1000 + millisecond
 
 
+def from_ms(value: int) -> str:
+    if value < 0:
+        raise ValueError("Timestamp must be non-negative")
+    hour, remainder = divmod(value, 3_600_000)
+    minute, remainder = divmod(remainder, 60_000)
+    second, millisecond = divmod(remainder, 1000)
+    return f"{hour:02d}:{minute:02d}:{second:02d},{millisecond:03d}"
+
+
 def parse_srt(content: str, strict: bool = False) -> list[Cue]:
     cues: list[Cue] = []
     for block_number, block in enumerate(re.split(r"\r?\n\r?\n+", content.strip()), 1):
@@ -53,6 +62,23 @@ def load_profile(path: str | None) -> dict:
     if not isinstance(value, dict):
         raise ValueError("Profile must be a JSON object")
     return value
+
+
+def clean_text(text: str) -> str:
+    normalized = text.replace("\r\n", "\n").replace("\r", "\n")
+    return "\n".join(line.rstrip() for line in normalized.split("\n")).strip()
+
+
+def clean_cues(cues: list[Cue]) -> list[Cue]:
+    return [Cue(cue.index, cue.start_ms, cue.end_ms, clean_text(cue.text)) for cue in cues]
+
+
+def render_srt(cues: list[Cue]) -> str:
+    blocks = [
+        f"{cue.index}\n{from_ms(cue.start_ms)} --> {from_ms(cue.end_ms)}\n{cue.text}"
+        for cue in cues
+    ]
+    return "\n\n".join(blocks) + ("\n" if blocks else "")
 
 
 def lint(
@@ -107,6 +133,8 @@ def main() -> None:
     parser.add_argument("--max-line", type=int)
     parser.add_argument("--max-cps", type=float)
     parser.add_argument("--strict", action="store_true")
+    parser.add_argument("--clean", action="store_true")
+    parser.add_argument("--clean-output", default="subtitle-cleaned.srt")
     args = parser.parse_args()
 
     profile = load_profile(args.profile)
@@ -117,6 +145,9 @@ def main() -> None:
     max_duration = int(maximum) if maximum is not None else None
 
     cues = parse_srt(Path(args.srt).read_text(encoding="utf-8-sig"), strict=args.strict)
+    if args.clean:
+        cues = clean_cues(cues)
+        Path(args.clean_output).write_text(render_srt(cues), encoding="utf-8")
     issues = lint(cues, max_line, max_cps, min_duration, max_duration)
     report = {
         "profile": profile.get("id") if profile else None,
