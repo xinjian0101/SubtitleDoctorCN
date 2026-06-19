@@ -1,0 +1,27 @@
+{
+  "profile_version": 1,
+  "id": "mobile-short-zh-cn",
+  "language": "zh-CN",
+  "description": "Review profile for short-form mobile video captions.",
+  "max_characters_per_line": 18,
+  "max_characters_per_second": 14.0,
+  "minimum_duration_ms": 700,
+  "maximum_duration_ms": 7000,
+  "maximum_lines": 2,
+  "punctuation_style": "zh-CN",
+  "allow_intentional_overlap": false,
+  "checks": {
+    "overlap": true,
+    "duration": true,
+    "reading_speed": true,
+    "line_length": true,
+    "mixed_punctuation": true,
+    "terminology": "review"
+  },
+  "safe_fixes": {
+    "trim_trailing_spaces": true,
+    "normalize_line_endings": true,
+    "collapse_blank_lines": true,
+    "rewrite_dialogue": false
+  }
+}
