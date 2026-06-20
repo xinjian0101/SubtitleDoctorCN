@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Project overview
+    url: https://github.com/xinjian0101/SubtitleDoctorCN/blob/main/ABOUT.md
+    about: Review supported formats, project boundaries, maturity, and governance.
+  - name: Subtitle review documentation
+    url: https://github.com/xinjian0101/SubtitleDoctorCN/tree/main/docs
+    about: Read rule, profile, approval, exception, and review guidance.
