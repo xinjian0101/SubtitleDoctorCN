@@ -1,0 +1,84 @@
+name: Bug report
+description: Report a reproducible parsing, linting, conversion, or cleanup defect
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use a short synthetic subtitle fixture. Do not upload confidential media or transcripts.
+  - type: input
+    id: version
+    attributes:
+      label: Commit or version
+    validations:
+      required: true
+  - type: dropdown
+    id: format
+    attributes:
+      label: Subtitle format
+      options:
+        - SRT
+        - WebVTT
+        - SRT to WebVTT conversion
+        - WebVTT to SRT conversion
+        - Not format-specific
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - Parsing
+        - Strict validation
+        - Timing checks
+        - Reading-speed checks
+        - Line-length checks
+        - Profile loading
+        - Cleanup
+        - Rendering or conversion
+        - Report output
+    validations:
+      required: true
+  - type: textarea
+    id: fixture
+    attributes:
+      label: Minimal synthetic subtitle
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Reproduction command
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: OS and Python version
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submission checks
+      options:
+        - label: The fixture is synthetic and contains no private transcript data.
+          required: true
+        - label: I verified the file encoding and identified the tested commit.
+          required: true
