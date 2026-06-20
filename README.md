@@ -1,116 +1,142 @@
+<div align="center">
+
 # SubtitleDoctorCN
 
-A local SRT quality checker for subtitle delivery workflows. The project finds common timeline, duration, reading-speed, line-length, and punctuation issues before subtitles are published, embedded, or handed off for review.
+**Deterministic SRT and WebVTT quality checks for production subtitle workflows.**
 
-> The current release performs checks only. It does not rewrite subtitle text automatically and does not replace editorial review.
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Formats](https://img.shields.io/badge/Formats-SRT%20%7C%20WebVTT-0969da)](ABOUT.md)
+[![License](https://img.shields.io/badge/License-MIT-2ea44f)](LICENSE)
+[![Status](https://img.shields.io/badge/Status-Active%20MVP-f59e0b)](MAINTENANCE_TRACE.md)
 
-## Use cases
+[Quick start](#quick-start) · [Checks](#quality-checks) · [Profiles](docs/STYLE_PROFILES.md) · [About](ABOUT.md) · [Review workflow](docs/REVIEW_WORKFLOW.md)
 
-- Pre-delivery checks for short-form video, courses, interviews, and commentary
-- Basic rule gates in batch subtitle workflows
-- Punctuation consistency checks for mixed-language captions
-- Parameterized review for different platform requirements
-- Before-and-after comparison during subtitle revision
+</div>
 
-## Current capabilities
+---
 
-- Timeline overlap detection
-- Invalid or unusual duration checks
-- Characters-per-second review
-- Maximum line-length review
-- Mixed punctuation hints
-- Structured JSON output
-- Local processing with no subtitle upload
+SubtitleDoctorCN checks subtitle timing, reading speed, line length, duration, overlap, and punctuation consistency before delivery. It supports SRT and WebVTT, versioned style profiles, strict parsing, JSON reports, and deterministic cleanup without rewriting dialogue meaning.
+
+> [!IMPORTANT]
+> Rule-based findings require editorial review against the source media. Automatic cleanup is intentionally limited to safe whitespace and format normalization.
+
+## At a glance
+
+| Area | Current support |
+|---|---|
+| Input | SRT and WebVTT |
+| Timing | Overlap, positive duration, min/max duration |
+| Readability | Characters per second, line length |
+| Style | Mixed-punctuation advisory |
+| Profiles | Versioned JSON thresholds |
+| Cleanup | Safe whitespace normalization |
+| Conversion | SRT ↔ WebVTT |
+| Reports | Structured JSON with issue levels |
 
 ## Quick start
 
-### Requirements
-
-- Python 3.10 or newer
-- A standard UTF-8 SRT file
-
-### Run
+Check an SRT file:
 
 ```bash
-python main.py example.srt --max-cps 15 --max-line 22 -o report.json
+python main.py example.srt \
+  --profile profiles/mobile-short.json \
+  -o subtitle-report.json
 ```
 
-### Test
+Clean and convert WebVTT to SRT:
+
+```bash
+python main.py captions.vtt \
+  --strict \
+  --clean \
+  --clean-format srt \
+  --clean-output captions-cleaned.srt
+```
+
+Run tests:
 
 ```bash
 python -m unittest -v
 ```
 
-## Options
+## Capability matrix
 
-| Option | Example | Description |
+| Capability | Status | Notes |
 |---|---:|---|
-| `--max-cps` | `15` | maximum characters per second before a review finding |
-| `--max-line` | `22` | maximum characters per subtitle line |
-| `-o` | `report.json` | output path for the JSON report |
+| SRT parsing and rendering | ✅ | UTF-8 input |
+| WebVTT parsing and rendering | ✅ | Identifiers and cue settings supported |
+| Profile-driven thresholds | ✅ | JSON profile files |
+| Strict malformed-block rejection | ✅ | Includes block number |
+| Deterministic cleanup | ✅ | Whitespace only |
+| Audio alignment | ⏳ | Not implemented |
+| Dialogue rewriting | ❌ | Intentionally outside scope |
 
-Thresholds should reflect the audience, screen size, language density, and delivery platform. One threshold is not suitable for every project.
+## Quality checks
 
-## Finding types
+| Finding | Level | Meaning |
+|---|---|---|
+| `duration` | error | End time is not greater than start time |
+| `overlap` | warning | Cue overlaps the previous cue |
+| `short_duration` | warning | Cue is shorter than the profile minimum |
+| `long_duration` | warning | Cue is longer than the profile maximum |
+| `reading_speed` | warning | Characters per second exceed the threshold |
+| `line_length` | warning | A line exceeds the configured limit |
+| `mixed_punctuation` | info | Punctuation styles may be inconsistent |
 
-### Timeline overlap
+## CLI examples
 
-A cue starts before the previous cue ends. This may cause simultaneous display or unexpected replacement behavior.
-
-### Invalid duration
-
-A cue with zero or negative duration cannot be displayed correctly. Very short or very long cues also require contextual review.
-
-### High reading speed
-
-Characters per second above the selected threshold may be difficult to read. Teams should use one consistent counting method when comparing revisions.
-
-### Long line
-
-A long line may wrap on mobile screens, cover important visual content, or reduce readability.
-
-### Mixed punctuation
-
-The checker flags lines that appear to combine punctuation styles. The finding is advisory because editorial style can differ by project.
+```bash
+python main.py subtitles.srt --max-cps 15 --max-line 22
+python main.py subtitles.vtt --strict
+python main.py subtitles.srt --clean --clean-output normalized.srt
+python main.py subtitles.srt --clean --clean-format vtt --clean-output normalized.vtt
+```
 
 ## Recommended workflow
 
-1. Export a UTF-8 SRT file from the editing or transcription tool.
-2. Select the appropriate style profile and thresholds.
-3. Run the checker and group findings by type.
-4. Review each cue against the source media.
-5. Revise the subtitle file.
-6. Run the checker again.
-7. Store the final SRT, report, profile version, and approval record together.
+```text
+subtitle export
+      ↓
+strict parser
+      ↓
+style profile
+      ↓
+rule checks
+      ↓
+editor review against source media
+      ↓
+optional deterministic cleanup
+      ↓
+final report + approval record
+```
+
+## Repository map
+
+| Path | Purpose |
+|---|---|
+| `main.py` | Parsers, renderers, cleanup, checks, and CLI |
+| `profiles/` | Versioned delivery profiles |
+| `schema/` | Profile contract |
+| `dictionaries/` | Terminology examples |
+| `docs/` | Rules, review, approval, and exception policies |
+| `example.srt` | Synthetic sample subtitle |
+| `test_*.py` | Parser, profile, cleanup, and WebVTT tests |
+| `ABOUT.md` | Mission, maturity, boundaries, and governance |
 
 ## Human review remains necessary
 
-Rule-based checks cannot reliably determine:
-
-- whether names, places, brands, and numbers are correct;
-- whether meaning is faithful to the source;
-- whether line breaks match tone and pacing;
-- whether specialized terms need explanation;
-- whether captions cover important visual information;
-- whether speaker changes are clear.
-
-## Known limitations
-
-- The current baseline supports SRT quality checks only.
-- It does not repair timelines or rewrite dialogue.
-- It does not perform speech recognition or audio alignment.
-- Rule and threshold checks can produce false positives.
-- It does not determine delivery-platform policy.
+The checker cannot reliably determine whether names, brands, numbers, translation choices, tone, speaker identity, or visual placement are correct. Review every final file against the source media.
 
 ## Documentation
 
-- [Rule Reference](docs/RULES.md)
-- [Style Profiles](docs/STYLE_PROFILES.md)
-- [Review Workflow](docs/REVIEW_WORKFLOW.md)
-- [Approval Record](docs/APPROVAL_RECORD.md)
-- [Exception Policy](docs/EXCEPTION_POLICY.md)
-- [Review Checklist](docs/REVIEW_CHECKLIST.md)
-- [Maintenance Trace](MAINTENANCE_TRACE.md)
+- [About the project](ABOUT.md)
+- [Rule reference](docs/RULES.md)
+- [Style profiles](docs/STYLE_PROFILES.md)
+- [Review workflow](docs/REVIEW_WORKFLOW.md)
+- [Approval record](docs/APPROVAL_RECORD.md)
+- [Exception policy](docs/EXCEPTION_POLICY.md)
+- [Review checklist](docs/REVIEW_CHECKLIST.md)
+- [Maintenance trace](MAINTENANCE_TRACE.md)
 
 ## License
 
