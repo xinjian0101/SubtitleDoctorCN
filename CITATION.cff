@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use SubtitleDoctorCN, cite this repository and the exact commit used."
+title: "SubtitleDoctorCN"
+type: software
+authors:
+  - name: "xinjian0101"
+repository-code: "https://github.com/xinjian0101/SubtitleDoctorCN"
+url: "https://github.com/xinjian0101/SubtitleDoctorCN/blob/main/ABOUT.md"
+license: MIT
+keywords:
+  - subtitles
+  - SRT
+  - WebVTT
+  - caption quality
+  - video production
+abstract: "A deterministic local checker for SRT and WebVTT timing, readability, profile rules, safe cleanup, and format conversion."
